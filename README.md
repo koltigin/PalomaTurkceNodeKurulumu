@@ -1,92 +1,79 @@
 ![Logo!](assets/paloma.png)
 
-[![Continuous integration](https://github.com/palomachain/paloma/actions/workflows/ci-test.yml/badge.svg?branch=master)](https://github.com/palomachain/paloma/actions/workflows/ci-test.yml)
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://img.shields.io/badge/repo%20status-WIP-yellow.svg?style=flat-square)](https://www.repostatus.org/#wip)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/palomachain/paloma?logo=paloma)
-[![License: Apache-2.0](https://img.shields.io/github/license/umee-network/umee.svg?style=flat-square)](https://github.com/palomachain/paloma/blob/main/LICENSE)
-![Lines of code](https://img.shields.io/tokei/lines/github/palomachain/paloma)
-
-> A Golang implementation of Paloma Chain, a decentralized, automation network for smart contracts
-> deployed in the Cosmos, EVM, Solana, and Polkadot networks.
-
-For Crosschain Software engineers that want simultaneous control of mulitiple smart contracts, on any blockchain, Paloma is decentralized and consensus-driven message delivery, fast state awareness, low cost state computation, and powerful attestation system that enables scaleable, crosschain, smart contract execution with any data source.
 
 
-## Table of Contents
+#### Paloma Türkçe Node Kurulum Rehberi
 
-- [Talk To Us](#talk-to-us)
-- [Releases](#releases)
-- [Active Networks](#active-networks)
-- [Public](#public)
-- [Private](#private)
-- [Install](#install)
-- [Contributing](CONTRIBUTING.md)
+### Go Kurulumu
 
-## Talk to us
+```
+cd $HOME
+wget -O go1.17.1.linux-amd64.tar.gz https://golang.org/dl/go1.17.1.linux-amd64.tar.gz
+rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.1.linux-amd64.tar.gz && rm go1.17.1.linux-amd64.tar.gz
+echo 'export GOROOT=/usr/local/go' >> $HOME/.bash_profile
+echo 'export GOPATH=$HOME/go' >> $HOME/.bash_profile
+echo 'export GO111MODULE=on' >> $HOME/.bash_profile
+echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile && . $HOME/.bash_profile
+go version
+```
 
-We have active, helpful communities on Twitter and Telegram.
+### Gerekli Kütüphanelerin Kurulması
+```
+cd $HOME
+sudo apt update
+sudo apt install make clang pkg-config libssl-dev build-essential git jq ncdu bsdmainutils -y < "/dev/null"
+```
 
-* [Twitter](https://twitter.com/paloma_chain)
-* [Telegram](https://t.me/palomachain)
-
-## Releases
-
-See [Release procedure](CONTRIBUTING.md#release-procedure) for more information about the release model.
-
-## Active Networks
-
-### Mainnet
-
-N/A
-
-## Testnet Setup Instructions
-
-To get the latest `palomad` binary:
+### Paloma Kurulumu
 
 ```shell
 wget -O - https://github.com/palomachain/paloma/releases/download/v0.2.3-prealpha/paloma_0.2.3-prealpha_Linux_x86_64v3.tar.gz | \
 sudo tar -C /usr/local/bin -xvzf - palomad
 sudo chmod +x /usr/local/bin/palomad
-# Required until we figure out cgo
 sudo wget -P /usr/lib https://github.com/CosmWasm/wasmvm/raw/main/api/libwasmvm.x86_64.so
 ```
 
-### Connecting to an existing testnet.
+### Node Adı Oluşturma
 
-Download and install the latest release of palomad.
-
-Initialize our configuration. This will populate a `~/.paloma/` directory.
 ```shell
-MONIKER="$(hostname)"
+MONIKER="<moniker-isminiz>"
 palomad init "$MONIKER"
 ```
 
-Copy the configs of the testnet we wish to connect to
+### Yapılandırma Dosyalarını Kopyalama
 
 ```shell
 wget -O ~/.paloma/config/genesis.json https://raw.githubusercontent.com/palomachain/testnet/master/paloma-testnet-4/genesis.json
 wget -O ~/.paloma/config/addrbook.json https://raw.githubusercontent.com/palomachain/testnet/master/paloma-testnet-4/addrbook.json
 ```
 
-Next you can generate a new set of keys to the new machine, or reuse an existing key.
-```shell
-VALIDATOR=<choose a name>
-palomad keys add "$VALIDATOR"
+### Cüzdan
 
-# Or if you have a mnemonic already, we can recover the keys with:
+## Yeni Cüzdan Oluşturma
+```shell
+VALIDATOR=<cüzdan-adını>
+palomad keys add "$VALIDATOR"
+```
+
+## Var Olan Cüzdanı İçeri Aktarma
+```
 palomad keys add "$VALIDATOR" --recover
 ```
 
-Get some funds!
+### Test Tokeni alma
+
 ```shell
 ADDRESS="$(palomad keys show "$VALIDATOR" -a)"
 JSON=$(jq -n --arg addr "$ADDRESS" '{"denom":"ugrain","address":$addr}') && curl -X POST --header "Content-Type: application/json" --data "$JSON" https://backend.faucet.palomaswap.com/claim
 ```
 
+### Cüzdan Bakyesini Kontrol Etme
 We can verify the new funds have been deposited.
 ```shell
 palomad query bank balances --node tcp://testnet.palomaswap.com:26657 "$ADDRESS"
 ```
+
+### Validator Oluşturma
 
 Stake your funds and create our validator.
 ```shell
@@ -111,6 +98,7 @@ palomad tx staking create-validator \
       --yes \
       -b block
 ```
+
 
 Start it!
 
