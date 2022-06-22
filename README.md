@@ -93,118 +93,118 @@ palomad tx staking create-validator \
 
 ### FAYDALI KOMUTLAR
 
-##Logları Kontrol Etme 
+## Logları Kontrol Etme 
 ```
 journalctl -fu palomad -o cat
 ```
 
-##Sistemi Başlatma
+## Sistemi Başlatma
 
 ```
 systemctl start palomad
 ```
 
-##Sistemi Durdurma
+## Sistemi Durdurma
 ```
 systemctl stop palomad
 ```
 
-##Sistemi Yeniden Başlatma
+## Sistemi Yeniden Başlatma
 ```
 systemctl restart palomad
 ```
 
-##Node Senkronizasyon Durumu
+## Node Senkronizasyon Durumu
 ```
 palomad status 2>&1 | jq .SyncInfo
 
 ```
 
-##Validator Bilgileri
+## Validator Bilgileri
 ```
 palomad status 2>&1 | jq .ValidatorInfo
 ```
 
-##Node Bilgileri
+## Node Bilgileri
 
 ```
 palomad status 2>&1 | jq .NodeInfo
 ```
 
-##Node ID Öğrenme
+## Node ID Öğrenme
 
 ```
 palomad tendermint show-node-id
 ```
 
 
-##Node IP Adresini Öğrenme
+## Node IP Adresini Öğrenme
 
 ```
 curl icanhazip.com
 ```
 
-##Cüzdanların Listesine Bakma
+## Cüzdanların Listesine Bakma
 
 ```
 palomad keys list
 ```
 
-##Cüzdanı İçeri Aktarma
+## Cüzdanı İçeri Aktarma
 
 ```
 palomad keys add $WALLET --recover
 ```
 
-##Cüzdanı Silme
+## Cüzdanı Silme
 
 ```
 palomad keys delete $WALLET
 ```
 
-##Cüzdan Bakiyesine Bakma
+## Cüzdan Bakiyesine Bakma
 
 ```
 palomad query bank balances $WALLET_ADDRESS
 ```
 
-##Bir Cüzdandan Diğer Bir Cüzdana Transfer Yapma
+## Bir Cüzdandan Diğer Bir Cüzdana Transfer Yapma
 
 ```
 palomad tx bank send $WALLET_ADDRESS <TO_WALLET_ADDRESS> 100000000grain
 ```
 
-##Proposal Oylamasına Katılma
+## Proposal Oylamasına Katılma
 
 ```
 palomad tx gov vote 1 yes --from $WALLET --chain-id=$CHAIN_ID
 ```
 
-##Validatore Stake Etme / Delegate Etme
+## Validatore Stake Etme / Delegate Etme
 
 ```
 palomad tx staking delegate $VALOPER_ADDRESS 100000000grain --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
 ```
 
-##Mevcut Validatorden Diğer Validatore Stake Etme / Redelegate Etme
+## Mevcut Validatorden Diğer Validatore Stake Etme / Redelegate Etme
 
 ```
 palomad tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 100000000grain --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
 ```
 
-##Ödülleri Çekme
+## Ödülleri Çekme
 
 ```
 palomad tx distribution withdraw-all-rewards --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
 ```
 
-##Komisyon Ödüllerini Çekme
+## Komisyon Ödüllerini Çekme
 
 ```
 palomad tx distribution withdraw-rewards $VALOPER_ADDRESS --from=$WALLET --commission --chain-id=$CHAIN_ID
 ```
 
-##Validator İsmini Değiştirme
+## Validator İsmini Değiştirme
 
 ```
 seid tx staking edit-validator \
@@ -213,7 +213,7 @@ seid tx staking edit-validator \
 --from=$WALLET
 ```
 
-##Validatoru Jail Durumundan Kurtarma 
+## Validatoru Jail Durumundan Kurtarma 
 
 ```
 palomad tx slashing unjail \
@@ -223,7 +223,7 @@ palomad tx slashing unjail \
   --gas=auto
 ```
 
-##Node'u Tamamen Silme 
+## Node'u Tamamen Silme 
 
 ```
 sudo systemctl stop palomad && \
@@ -235,7 +235,7 @@ rm -rf .paloma paloma && \
 rm -rf $(which palomad)
 ```
 
-### Uploading a local contract
+## Bir Lokal Kontrat Yükleme
 
 ```shell
 CONTRACT=<contract.wasm>
