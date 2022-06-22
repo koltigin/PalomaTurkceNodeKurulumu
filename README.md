@@ -2,7 +2,7 @@
 
 
 
-#### Paloma Türkçe Node Kurulum Rehberi
+### Paloma Türkçe Node Kurulum Rehberi
 
 ### Go Kurulumu
 
@@ -68,81 +68,171 @@ JSON=$(jq -n --arg addr "$ADDRESS" '{"denom":"ugrain","address":$addr}') && curl
 ```
 
 ### Cüzdan Bakyesini Kontrol Etme
-We can verify the new funds have been deposited.
 ```shell
 palomad query bank balances --node tcp://testnet.palomaswap.com:26657 "$ADDRESS"
 ```
 
 ### Validator Oluşturma
 
-Stake your funds and create our validator.
 ```shell
-MAIN_VALIDATOR_NODE="tcp://testnet.palomaswap.com:26657"
-CHAIN_ID="paloma-testnet-4"
-DEFAULT_GAS_AMOUNT="10000000"
-VALIDATOR_STAKE_AMOUNT=100000grain
-PUBKEY="$(palomad tendermint show-validator)"
 palomad tx staking create-validator \
-      --fees 10000grain \
-      --from="$VALIDATOR" \
-      --amount="$VALIDATOR_STAKE_AMOUNT" \
-      --pubkey="$PUBKEY" \
-      --moniker="$MONIKER" \
-      --chain-id="$CHAIN_ID" \
-      --commission-rate="0.1" \
-      --commission-max-rate="0.2" \
-      --commission-max-change-rate="0.05" \
-      --min-self-delegation="100" \
-      --gas=$DEFAULT_GAS_AMOUNT \
-      --node "$MAIN_VALIDATOR_NODE" \
-      --yes \
-      -b block
+--amount=2950000ugrain \
+--pubkey=$(palomad tendermint show-validator) \
+--moniker=validator-ismi \
+--chain-id=paloma-testnet-5 \
+--commission-rate="0.05" \
+--commission-max-rate="0.20" \
+--commission-max-change-rate="0.01" \
+--min-self-delegation="1" \
+--fees=10000ugrain \
+--gas=10000000 \
+--from=cuzdan-ismi \
+--node "tcp://testnet.palomaswap.com:26657" \
+-y
+```
+
+### FAYDALI KOMUTLAR
+
+##Logları Kontrol Etme 
+```
+journalctl -fu palomad -o cat
+```
+
+##Sistemi Başlatma
+
+```
+systemctl start palomad
+```
+
+##Sistemi Durdurma
+```
+systemctl stop palomad
+```
+
+##Sistemi Yeniden Başlatma
+```
+systemctl restart palomad
+```
+
+##Node Senkronizasyon Durumu
+```
+palomad status 2>&1 | jq .SyncInfo
+
+```
+
+##Validator Bilgileri
+```
+palomad status 2>&1 | jq .ValidatorInfo
+```
+
+##Node Bilgileri
+
+```
+palomad status 2>&1 | jq .NodeInfo
+```
+
+##Node ID Öğrenme
+
+```
+palomad tendermint show-node-id
 ```
 
 
-Start it!
+##Node IP Adresini Öğrenme
 
-```shell
-MAIN_PEER_DESIGNATION=175ccd9b448390664ea121427aab20138cc8fcec@testnet.palomaswap.com:26656
-palomad start --p2p.persistent_peers "$MAIN_PEER_DESIGNATION"
+```
+curl icanhazip.com
 ```
 
-#### Running with `systemd`
+##Cüzdanların Listesine Bakma
 
-First configure the service:
-
-```shell
-cat << EOT > /etc/systemd/system/palomad.service
-[Unit]
-Description=Paloma Blockchain
-After=network.target
-ConditionPathExists=/usr/local/bin/palomad
-
-[Service]
-Type=simple
-Restart=always
-RestartSec=5
-WorkingDirectory=~
-ExecStartPre=
-ExecStart=/usr/local/bin/palomad start --p2p.persistent_peers 175ccd9b448390664ea121427aab20138cc8fcec@testnet.palomaswap.com:26656
-ExecReload=
-
-[Install]
-WantedBy=multi-user.target
-
-[Service]
-LimitNOFILE=65535
-EOT
+```
+palomad keys list
 ```
 
-Then reload systemd configurations and start the service!
+##Cüzdanı İçeri Aktarma
 
-```shell
-systemctl daemon-reload
-service palomad start
+```
+palomad keys add $WALLET --recover
+```
 
-# Check that it started successfully.
-service palomad status
+##Cüzdanı Silme
+
+```
+palomad keys delete $WALLET
+```
+
+##Cüzdan Bakiyesine Bakma
+
+```
+palomad query bank balances $WALLET_ADDRESS
+```
+
+##Bir Cüzdandan Diğer Bir Cüzdana Transfer Yapma
+
+```
+palomad tx bank send $WALLET_ADDRESS <TO_WALLET_ADDRESS> 100000000grain
+```
+
+##Proposal Oylamasına Katılma
+
+```
+palomad tx gov vote 1 yes --from $WALLET --chain-id=$CHAIN_ID
+```
+
+##Validatore Stake Etme / Delegate Etme
+
+```
+palomad tx staking delegate $VALOPER_ADDRESS 100000000grain --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
+```
+
+##Mevcut Validatorden Diğer Validatore Stake Etme / Redelegate Etme
+
+```
+palomad tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 100000000grain --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
+```
+
+##Ödülleri Çekme
+
+```
+palomad tx distribution withdraw-all-rewards --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
+```
+
+##Komisyon Ödüllerini Çekme
+
+```
+palomad tx distribution withdraw-rewards $VALOPER_ADDRESS --from=$WALLET --commission --chain-id=$CHAIN_ID
+```
+
+##Validator İsmini Değiştirme
+
+```
+seid tx staking edit-validator \
+--moniker=NEWNODENAME \
+--chain-id=$CHAIN_ID \
+--from=$WALLET
+```
+
+##Validatoru Jail Durumundan Kurtarma 
+
+```
+palomad tx slashing unjail \
+  --broadcast-mode=block \
+  --from=$WALLET \
+  --chain-id=$CHAIN_ID \
+  --gas=auto
+```
+
+##Node'u Tamamen Silme 
+
+```
+sudo systemctl stop palomad && \
+sudo systemctl disable palomad && \
+rm /etc/systemd/system/palomad.service && \
+sudo systemctl daemon-reload && \
+cd $HOME && \
+rm -rf .paloma paloma && \
+rm -rf $(which palomad)
 ```
 
 ### Uploading a local contract
@@ -153,32 +243,4 @@ VALIDATOR="$(palomad keys list --list-names | head -n1)"
 palomad tx wasm store "$CONTRACT" --from "$VALIDATOR" --broadcast-mode block -y --gas auto --fees 3000grain
 ```
 
-## Setting up a new private testnet
 
-Download and install the latest release of palomad.
-
-Install `jq`, used by the setup script.
-
-```shell
-apt install jq
-```
-
-Set up the chain validator.
-
-```shell
-CHAIN_ID=paloma-iona \
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/palomachain/paloma/master/scripts/setup-volume-testnet.sh)"
-```
-
-We should now see an error free execution steadily increasing chain depth.
-
-```shell
-palomad start
-```
-
-Others wishing to connect to the new testnet will need your `.paloma/config/genesis.json` file,
-as well as the main peer designation. We can get the main peer designation with `jq`:
-
-```shell
-jq -r '.body.memo' ~/.paloma/config/gentx/gentx-*.json
-```
