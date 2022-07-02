@@ -126,7 +126,7 @@ JSON=$(jq -n --arg addr "$ADDRESS" '{"denom":"ugrain","address":$addr}') && curl
 
 ### Cüzdan Bakyesini Kontrol Etme
 ```shell
-palomad query bank balances --node tcp://testnet.palomaswap.com:26657 "$ADDRESS"
+palomad query bank balances CUZDAN_ADRESI
 ```
 
 ### ARA NOT
@@ -141,6 +141,10 @@ Aşağıdaki kod ile de senkronizasyonu takip edebilirsiniz. Eğer false çıkt�
 palomad status 2>&1 | jq .SyncInfo
 
 ```
+
+### PEER Bulma Sorunu Olursa Aşağıdaki Dosyayı Kullanabilirsiniz.
+
+
 
 ### Validator Oluşturma
 1 GRAIN = 1.000.000 uGRAIN = 1000000ugrain
