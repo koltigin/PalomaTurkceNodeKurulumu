@@ -1,7 +1,5 @@
 ![Logo!](assets/paloma.png)
 
-
-
 ### Paloma Türkçe Node Kurulum Rehberi (Paloma Testnet 6'ya Güncellenmiştir)
 
 ### Go Kurulumu
@@ -37,7 +35,7 @@ sudo wget -P /usr/lib https://github.com/CosmWasm/wasmvm/raw/main/api/libwasmvm.
 ### Node Adı Oluşturma
 
 ```shell
-MONIKER="<moniker-isminiz>"
+MONIKER="moniker-isminiz"
 palomad init "$MONIKER"
 ```
 
@@ -109,9 +107,9 @@ palomad keys add "$VALIDATOR"
 ```
 
 ## Var Olan Cüzdanı İçeri Aktarma
-$VALIDATOR bömünü silip cüzdan adınızı yazınız.
+
 ```
-palomad keys add "$VALIDATOR" --recover
+palomad keys add "CUZDAN_ADINIZ" --recover
 ```
 
 ### Test Tokeni alma
@@ -166,8 +164,6 @@ palomad tx staking create-validator \
       --broadcast-mode=block
 ```
 
-
-
 ### FAYDALI KOMUTLAR
 
 ## Logları Kontrol Etme 
@@ -214,11 +210,16 @@ palomad status 2>&1 | jq .NodeInfo
 palomad tendermint show-node-id
 ```
 
-
 ## Node IP Adresini Öğrenme
 
 ```
 curl icanhazip.com
+```
+
+## Peer Adresinizi Öğrenme
+
+```
+echo "$(palomad tendermint show-node-id)@$(curl ifconfig.me):26656"
 ```
 
 ## Cüzdanların Listesine Bakma
@@ -230,64 +231,64 @@ palomad keys list
 ## Cüzdanı İçeri Aktarma
 
 ```
-palomad keys add $WALLET --recover
+palomad keys add CUZDAN_ADI --recover
 ```
 
 ## Cüzdanı Silme
 
 ```
-palomad keys delete $WALLET
+palomad keys delete CUZDAN_ADI
 ```
 
 ## Cüzdan Bakiyesine Bakma
 
 ```
-palomad query bank balances $WALLET_ADDRESS
+palomad query bank balances CUZDAN_ADRESI
 ```
 
 ## Bir Cüzdandan Diğer Bir Cüzdana Transfer Yapma
 
 ```
-palomad tx bank send $WALLET_ADDRESS <TO_WALLET_ADDRESS> 100000000grain
+palomad tx bank send CUZDAN_ADRESI GONDERILECEK_CUZDAN_ADRESI 100000000grain
 ```
 
 ## Proposal Oylamasına Katılma
 
 ```
-palomad tx gov vote 1 yes --from $WALLET --chain-id=$CHAIN_ID
+palomad tx gov vote 1 yes --from CUZDAN_ADI --chain-id=paloma-testnet-6
 ```
 
 ## Validatore Stake Etme / Delegate Etme
 
 ```
-palomad tx staking delegate $VALOPER_ADDRESS 100000000grain --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
+palomad tx staking delegate $VALOPER_ADDRESS 100000000grain --from=CUZDAN_ADI --chain-id=paloma-testnet-6 --gas=auto
 ```
 
 ## Mevcut Validatorden Diğer Validatore Stake Etme / Redelegate Etme
 
 ```
-palomad tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 100000000grain --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
+palomad tx staking redelegate <MevcutValidatorAdresi> <StakeEdilecekYeniValidatorAdresi> 100000000grain --from=CUZDAN_ADI/CUZDAN_ADRESI --chain-id=paloma-testnet-6 --gas=auto
 ```
 
 ## Ödülleri Çekme
 
 ```
-palomad tx distribution withdraw-all-rewards --from=$WALLET --chain-id=$CHAIN_ID --gas=auto
+palomad tx distribution withdraw-all-rewards --from=CUZDAN_ADI --chain-id=paloma-testnet-6 --gas=auto
 ```
 
 ## Komisyon Ödüllerini Çekme
 
 ```
-palomad tx distribution withdraw-rewards $VALOPER_ADDRESS --from=$WALLET --commission --chain-id=$CHAIN_ID
+palomad tx distribution withdraw-rewards $VALOPER_ADDRESS --from=CUZDAN_ADI --commission --chain-id=paloma-testnet-6
 ```
 
 ## Validator İsmini Değiştirme
 
 ```
-seid tx staking edit-validator \
---moniker=NEWNODENAME \
---chain-id=$CHAIN_ID \
---from=$WALLET
+palomad tx staking edit-validator \
+--moniker=YENI_NODE_ADI \
+--chain-id=paloma-testnet-6 \
+--from=CUZDAN_ADI
 ```
 
 ## Validatoru Jail Durumundan Kurtarma 
@@ -295,8 +296,8 @@ seid tx staking edit-validator \
 ```
 palomad tx slashing unjail \
   --broadcast-mode=block \
-  --from=$WALLET \
-  --chain-id=$CHAIN_ID \
+  --from=CUZDAN_ADI \
+  --chain-id=paloma-testnet-6 \
   --gas=auto
 ```
 
