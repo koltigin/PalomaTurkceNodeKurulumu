@@ -2,7 +2,7 @@
 
 
 
-### Paloma Türkçe Node Kurulum Rehberi
+### Paloma Türkçe Node Kurulum Rehberi (Paloma Testnet 6'ya Güncellenmiştir)
 
 ### Go Kurulumu
 
@@ -27,7 +27,7 @@ sudo apt install make clang pkg-config libssl-dev build-essential git jq ncdu bs
 ### Paloma Kurulumu
 
 ```shell
-wget -O - https://github.com/palomachain/paloma/releases/download/v0.2.3-prealpha/paloma_0.2.3-prealpha_Linux_x86_64v3.tar.gz | \
+wget -O - https://github.com/palomachain/paloma/releases/download/v0.2.5-prealpha/paloma_0.2.5-prealpha_Linux_x86_64.tar.gz | \
 sudo tar -C /usr/local/bin -xvzf - palomad
 sudo chmod +x /usr/local/bin/palomad
 sudo wget -P /usr/lib https://github.com/CosmWasm/wasmvm/raw/main/api/libwasmvm.x86_64.so
@@ -43,24 +43,30 @@ palomad init "$MONIKER"
 ### Yapılandırma Dosyalarını Kopyalama
 
 ```shell
-wget -O ~/.paloma/config/genesis.json https://raw.githubusercontent.com/palomachain/testnet/master/paloma-testnet-4/genesis.json
-wget -O ~/.paloma/config/addrbook.json https://raw.githubusercontent.com/palomachain/testnet/master/paloma-testnet-4/addrbook.json
+wget -O ~/.paloma/config/genesis.json https://raw.githubusercontent.com/palomachain/testnet/master/paloma-testnet-6/genesis.json
+wget -O ~/.paloma/config/addrbook.json https://raw.githubusercontent.com/palomachain/testnet/master/paloma-testnet-6/addrbook.json
 ```
 
 ### Cüzdan
 
 ## Yeni Cüzdan Oluşturma
+<cüzdan-adınız> bu kısmı (<> dahil silerek cüzdan adınızı yazınız)
 ```shell
-VALIDATOR=<cüzdan-adını>
+VALIDATOR=<cüzdan-adınız>
 palomad keys add "$VALIDATOR"
 ```
 
 ## Var Olan Cüzdanı İçeri Aktarma
+$VALIDATOR bömünü silip cüzdan adınızı yazınız.
 ```
 palomad keys add "$VALIDATOR" --recover
 ```
 
 ### Test Tokeni alma
+
+https://faucet.palomaswap.com/ adresinden ya da aşağıdaki kodu terminalde girerek token talep edebilirsiniz.
+
+Aşağıdaki kodda yer alan $ADDRESS bu bölümü silerek paloma adresinizi yazınız.
 
 ```shell
 ADDRESS="$(palomad keys show "$VALIDATOR" -a)"
@@ -74,6 +80,30 @@ palomad query bank balances --node tcp://testnet.palomaswap.com:26657 "$ADDRESS"
 
 ### Validator Oluşturma
 
+```
+MONIKER="$(hostname)"
+VALIDATOR="$(palomad keys list --list-names | head -n1)"
+STAKE_AMOUNT=1000000ugrain
+PUBKEY="$(palomad tendermint show-validator)"
+palomad tx staking create-validator \
+      --fees=1000000ugrain \
+      --from="$VALIDATOR" \
+      --amount="$STAKE_AMOUNT" \
+      --pubkey="$PUBKEY" \
+      --moniker="$MONIKER" \
+      --identity=kaybase.io'dan aldığınız id'nizi buraya giriniz \
+      --website="https://www.example.com" \
+      --details="Bu bölüme istediğiniz bir cümya ya da her ne ise onu yazabilirsiniz" \
+      --chain-id=paloma-testnet-6 \
+      --commission-rate="0.1" \
+      --commission-max-rate="0.2" \
+      --commission-max-change-rate="0.05" \
+      --min-self-delegation="100" \
+      --yes \
+      --broadcast-mode=block
+```
+
+Aşağıdaki Testnet 5'te kullandığımız kod yapısı. (Yukarıdaki kod test edildikten sonra tekrar güncelleyeceğim)
 ```shell
 palomad tx staking create-validator \
 --amount=2950000ugrain \
@@ -90,6 +120,7 @@ palomad tx staking create-validator \
 --node "tcp://testnet.palomaswap.com:26657" \
 -y
 ```
+
 
 ### FAYDALI KOMUTLAR
 
