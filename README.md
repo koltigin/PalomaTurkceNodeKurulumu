@@ -1,4 +1,5 @@
-![Logo!](assets/paloma.png)
+![image](https://user-images.githubusercontent.com/102043225/177013335-d766d4c9-0815-4ded-a99b-c0508e4ee1a0.png)
+
 
 ### Paloma Türkçe Node Kurulum Rehberi (Paloma Testnet 6'ya Güncellenmiştir)
 
