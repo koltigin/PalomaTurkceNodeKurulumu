@@ -144,6 +144,7 @@ palomad status 2>&1 | jq .SyncInfo
 
 ### PEER Bulma Sorunu Olursa Aşağıdaki Dosyayı Kullanabilirsiniz.
 
+[addrbook.zip](https://github.com/koltigin/PalomaTurkceNodeKurulumu/files/9033688/addrbook.zip)
 
 
 ### Validator Oluşturma
