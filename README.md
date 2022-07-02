@@ -47,6 +47,57 @@ wget -O ~/.paloma/config/genesis.json https://raw.githubusercontent.com/palomach
 wget -O ~/.paloma/config/addrbook.json https://raw.githubusercontent.com/palomachain/testnet/master/paloma-testnet-6/addrbook.json
 ```
 
+### Indexer'i İnaktif Etme
+```shell
+indexer="null"
+sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.paloma/config/config.toml
+```
+
+### Pruning Yapma 
+```shell
+pruning="custom"
+pruning_keep_recent="100"
+pruning_keep_every="0"
+pruning_interval="50"
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.paloma/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.paloma/config/app.toml
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.paloma/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.paloma/config/app.toml
+```
+
+### Prometheus'u Aktif Etme
+```shell
+sed -i -e "s/prometheus = false/prometheus = true/" $HOME/.paloma/config/config.toml
+```
+
+### Servis Dosyası Oluşturma
+Aşağıdaki kodu tek seferde giriniz.
+```shell
+sudo tee /etc/systemd/system/palomad.service > /dev/null <<EOF
+[Unit]
+Description=paloma
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which palomad) start --home $HOME/.paloma
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+### Node'u Başlatma
+Aşağıdaki kodları da tek seferde girebilirsiniz.
+```shell
+sudo systemctl daemon-reload
+sudo systemctl enable palomad
+sudo systemctl restart palomad
+```
+
 ### Cüzdan
 
 ## Yeni Cüzdan Oluşturma
@@ -76,6 +127,19 @@ JSON=$(jq -n --arg addr "$ADDRESS" '{"denom":"ugrain","address":$addr}') && curl
 ### Cüzdan Bakyesini Kontrol Etme
 ```shell
 palomad query bank balances --node tcp://testnet.palomaswap.com:26657 "$ADDRESS"
+```
+
+### ARA NOT
+Bu aşamada validator oluşturmadan önce aşağıdaki kodlar ile blokları takip edebilir; 
+
+```
+journalctl -fu palomad -o cat
+```
+
+Aşağıdaki kod ile de senkronizasyonu takip edebilirsiniz. Eğer false çıktısı alıyorsanız validator oluşturma adımına geçebilirsiniz. 
+```
+palomad status 2>&1 | jq .SyncInfo
+
 ```
 
 ### Validator Oluşturma
