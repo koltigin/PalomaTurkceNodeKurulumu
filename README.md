@@ -143,18 +143,16 @@ palomad status 2>&1 | jq .SyncInfo
 ```
 
 ### Validator Oluşturma
+1 GRAIN = 1.000.000 uGRAIN = 1000000ugrain
 
 ```
-MONIKER="$(hostname)"
-VALIDATOR="$(palomad keys list --list-names | head -n1)"
-STAKE_AMOUNT=1000000ugrain
 PUBKEY="$(palomad tendermint show-validator)"
 palomad tx staking create-validator \
       --fees=1000000ugrain \
-      --from="$VALIDATOR" \
-      --amount="$STAKE_AMOUNT" \
+      --from="CUZDAN_ADINIZ" \
+      --amount="10000000ugrain" \
       --pubkey="$PUBKEY" \
-      --moniker="$MONIKER" \
+      --moniker="VALIDATOR_ADINIZ" \
       --identity=kaybase.io'dan aldığınız id'nizi buraya giriniz \
       --website="https://www.example.com" \
       --details="Bu bölüme istediğiniz bir cümya ya da her ne ise onu yazabilirsiniz" \
@@ -167,23 +165,6 @@ palomad tx staking create-validator \
       --broadcast-mode=block
 ```
 
-Aşağıdaki Testnet 5'te kullandığımız kod yapısı. (Yukarıdaki kod test edildikten sonra tekrar güncelleyeceğim)
-```shell
-palomad tx staking create-validator \
---amount=2950000ugrain \
---pubkey=$(palomad tendermint show-validator) \
---moniker=validator-ismi \
---chain-id=paloma-testnet-5 \
---commission-rate="0.05" \
---commission-max-rate="0.20" \
---commission-max-change-rate="0.01" \
---min-self-delegation="1" \
---fees=10000ugrain \
---gas=10000000 \
---from=cuzdan-ismi \
---node "tcp://testnet.palomaswap.com:26657" \
--y
-```
 
 
 ### FAYDALI KOMUTLAR
@@ -337,5 +318,3 @@ CONTRACT=<contract.wasm>
 VALIDATOR="$(palomad keys list --list-names | head -n1)"
 palomad tx wasm store "$CONTRACT" --from "$VALIDATOR" --broadcast-mode block -y --gas auto --fees 3000grain
 ```
-
-
