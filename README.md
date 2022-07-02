@@ -144,8 +144,19 @@ palomad status 2>&1 | jq .SyncInfo
 
 ### PEER Bulma Sorunu Olursa Aşağıdaki Dosyayı Kullanabilirsiniz.
 
+addrbook.json dosyasını zipten çıkarıp WinSCP programı ile sunucusunuza bağlanarak
+/.paloma/config dosyası içerisine kopyalayabilirsiniz.
+
 [addrbook.zip](https://github.com/koltigin/PalomaTurkceNodeKurulumu/files/9033688/addrbook.zip)
 
+Kopyalamadan önce sistemi durduralım;
+```
+systemctl stop palomad
+```
+Dosyayı kopyalayalım ve sonra aşağıdaki kod ile sistemi yeniden başlatalım
+```
+systemctl start palomad
+```
 
 ### Validator Oluşturma
 1 GRAIN = 1.000.000 uGRAIN = 1000000ugrain
